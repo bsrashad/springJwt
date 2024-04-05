@@ -7,6 +7,10 @@ import com.helloIftekhar.springJwt.model.Token;
 import com.helloIftekhar.springJwt.model.User;
 import com.helloIftekhar.springJwt.repository.TokenRepository;
 import com.helloIftekhar.springJwt.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +21,12 @@ import java.util.Optional;
 
 @Service
 public class AuthenticationService {
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private EmailService emailService;
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -59,10 +69,26 @@ public class AuthenticationService {
         String jwt = jwtService.generateToken(user);
 
         saveUserToken(jwt, user);
+        String verificationUrl = "http://localhost:8080/verifyEmailToken?token=" + jwt;
+
+        emailService.sendEmail(request.getUsername(),"email verification", verificationUrl);
+        System.out.println("-------------------"+verificationUrl);
 
         return new AuthenticationResponse(jwt, "User registration was successful");
 
     }
+
+    public void sendVerificationEmail(String email, String token) {
+        String verificationUrl = "http://localhost:8080/verifyEmailToken?token=" + token;
+    
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Email Verification");
+        message.setText("Click the link below to verify your email:\n" + verificationUrl);
+    
+        javaMailSender.send(message);
+    }
+
 
     public AuthenticationResponse authenticate(User request) {
         authenticationManager.authenticate(

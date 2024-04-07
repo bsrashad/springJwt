@@ -44,6 +44,7 @@ public class JwtService {
     }
 
     private Date extractExpiration(String token) {
+        System.out.println("%%%%%"+extractClaim(token, Claims::getExpiration));
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -67,7 +68,7 @@ public class JwtService {
                 .builder()
                 .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 24*60*60*1000 ))
+                .expiration(new Date(System.currentTimeMillis() + 24*60*60*1000))
                 .signWith(getSigninKey())
                 .compact();
 

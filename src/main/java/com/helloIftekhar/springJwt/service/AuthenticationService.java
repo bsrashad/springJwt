@@ -9,14 +9,20 @@ import com.helloIftekhar.springJwt.repository.TokenRepository;
 import com.helloIftekhar.springJwt.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -78,16 +84,16 @@ public class AuthenticationService {
 
     }
 
-    public void sendVerificationEmail(String email, String token) {
-        String verificationUrl = "http://localhost:8080/verifyEmailToken?token=" + token;
+    // public void sendVerificationEmail(String email, String token) {
+    //     String verificationUrl = "http://localhost:8080/verifyEmailToken?token=" + token;
     
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Email Verification");
-        message.setText("Click the link below to verify your email:\n" + verificationUrl);
+    //     SimpleMailMessage message = new SimpleMailMessage();
+    //     message.setTo(email);
+    //     message.setSubject("Email Verification");
+    //     message.setText("Click the link below to verify your email:\n" + verificationUrl);
     
-        javaMailSender.send(message);
-    }
+    //     javaMailSender.send(message);
+    // }
 
 
     public AuthenticationResponse authenticate(User request) {
@@ -126,4 +132,25 @@ public class AuthenticationService {
         token.setUser(user);
         tokenRepository.save(token);
     }
+
+    
+public ResponseEntity<String> resetPassword( String token) {
+    // String token = request.get("token");
+    System.out.println("^^^^^^^^^"+token);
+    // String newPassword = request.get("newPassword");
+    String newPassword="qwerty";
+
+    if(!jwtService.isTokenExpired(token)){
+
+        String username = jwtService.extractUsername(token);
+        User user = repository.findByUsername(username).orElseThrow();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        // user.setPassword(newPassword);
+        user = repository.save(user);
+
+        return ResponseEntity.status(HttpStatus.OK).body("reset password successfullyyy");
+    } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is expired.");
+    }
+}
 }

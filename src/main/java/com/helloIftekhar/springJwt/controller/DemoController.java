@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.controller;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -113,30 +115,20 @@ public ResponseEntity<String> generatePassword(@RequestParam("token") String tok
 
 
 
-// @PostMapping("/resetpassword")
-// public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
-//     String token = request.get("token");
-//     System.out.println("^^^^^^^^^"+token);
-//     String newPassword = request.get("newPassword");
+@PostMapping("/resetpassword")
+public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
 
-//     if(!jwtService.isTokenExpired(token)){
+    String  newPassword = request.get("newPassword");
+    String token=request.get("token");
 
-//         String username = jwtService.extractUsername(token);
-//         User user = repository.findByUsername(username).orElseThrow();
-//         user.setPassword(passwordEncoder.encode(newPassword));
-//         user = repository.save(user);
-
-//         return ResponseEntity.ok("RESET PASSWORD successfully");
-//     } else {
-//         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is expired.");
-//     }
-// }
-
-
-@GetMapping("/resetpassword")
-public ResponseEntity<String> resetPassword(@RequestParam("token") String token) {
-    return authenticationService.resetPassword(token);
+    return authenticationService.resetPassword(token,newPassword);
 }
+
+
+@PutMapping("/changepassword")
+    public ResponseEntity<String> changePassword(@RequestParam String email, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        return authenticationService.changePassword(email, oldPassword, newPassword);
+    }
 
 
 

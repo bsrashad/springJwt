@@ -1,29 +1,22 @@
 package com.helloIftekhar.springJwt.service;
 
-
-import com.helloIftekhar.springJwt.model.AuthenticationResponse;
-import com.helloIftekhar.springJwt.model.Role;
-import com.helloIftekhar.springJwt.model.Token;
-import com.helloIftekhar.springJwt.model.User;
-import com.helloIftekhar.springJwt.repository.TokenRepository;
-import com.helloIftekhar.springJwt.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.helloIftekhar.springJwt.model.AuthenticationResponse;
+import com.helloIftekhar.springJwt.model.Token;
+import com.helloIftekhar.springJwt.model.User;
+import com.helloIftekhar.springJwt.repository.TokenRepository;
+import com.helloIftekhar.springJwt.repository.UserRepository;
 
 @Service
 public class AuthenticationService {
@@ -134,11 +127,8 @@ public class AuthenticationService {
     }
 
     
-public ResponseEntity<String> resetPassword( String token) {
-    // String token = request.get("token");
-    System.out.println("^^^^^^^^^"+token);
-    // String newPassword = request.get("newPassword");
-    String newPassword="qwerty";
+public ResponseEntity<String> resetPassword( String token,String newPassword) {
+    
 
     if(!jwtService.isTokenExpired(token)){
 
@@ -148,9 +138,32 @@ public ResponseEntity<String> resetPassword( String token) {
         // user.setPassword(newPassword);
         user = repository.save(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body("reset password successfullyyy");
+        return ResponseEntity.ok("RESET PASSWORD successfully");
     } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is expired.");
     }
 }
+
+public ResponseEntity<String> changePassword( String email, String oldPassword,String newPassword) {
+    // String oldpasswordencoded= passwordEncoder.encode(oldPassword);
+    // Optional<User> userOptional = repository.findByUsernameAndPassword(email, passwordEncoder.matches(newPassword, oldPassword)  oldPassword);
+    Optional<User> userOptional = repository.findByUsername(email);
+    if (userOptional.isPresent()) {
+        User user = userOptional.get();
+        if(passwordEncoder.matches(oldPassword, user.getPassword())){
+            String encodednewpassword=passwordEncoder.encode(newPassword);
+            user.setPassword(encodednewpassword);
+        repository.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully for " + email);
+        }else{
+            return ResponseEntity.status(HttpStatus.OK).body("password doesnt match");
+        }
+        
+        
+    } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email ");
+    }
+}
+
+
 }

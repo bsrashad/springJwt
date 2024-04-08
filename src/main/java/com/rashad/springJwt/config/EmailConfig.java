@@ -1,4 +1,4 @@
-package com.helloIftekhar.springJwt.config;
+package com.rashad.springJwt.config;
 
 import java.util.Properties;
 

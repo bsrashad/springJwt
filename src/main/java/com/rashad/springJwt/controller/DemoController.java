@@ -1,4 +1,4 @@
-package com.helloIftekhar.springJwt.controller;
+package com.rashad.springJwt.controller;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,15 +13,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.helloIftekhar.springJwt.model.AuthenticationResponse;
-import com.helloIftekhar.springJwt.model.EmailRequest;
-import com.helloIftekhar.springJwt.model.User;
-import com.helloIftekhar.springJwt.repository.UserRepository;
-import com.helloIftekhar.springJwt.service.AuthenticationService;
-import com.helloIftekhar.springJwt.service.EmailService;
-import com.helloIftekhar.springJwt.service.JwtService;
+import com.rashad.springJwt.model.AuthenticationResponse;
+import com.rashad.springJwt.model.EmailRequest;
+import com.rashad.springJwt.model.User;
+import com.rashad.springJwt.repository.UserRepository;
+import com.rashad.springJwt.service.AuthenticationService;
+import com.rashad.springJwt.service.EmailService;
+import com.rashad.springJwt.service.JwtService;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -53,6 +54,10 @@ public class DemoController {
 public ResponseEntity<String> verifyEmailToken(@RequestParam("token") String token) {
     System.out.println("+++++++######++++++++");
 if(!jwtService.isTokenExpired(token)){
+    String useremail = jwtService.extractUsername(token);
+    User user = repository.findByUsername(useremail).orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + useremail));
+    user.setIsVerified(true);
+    repository.save(user);
     return ResponseEntity.ok("Email verified successfully");
 }
 return ResponseEntity.badRequest().body("Invalid token or user already verified");

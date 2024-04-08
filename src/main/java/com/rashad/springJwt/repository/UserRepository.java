@@ -1,7 +1,8 @@
-package com.helloIftekhar.springJwt.repository;
+package com.rashad.springJwt.repository;
 
-import com.helloIftekhar.springJwt.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.rashad.springJwt.model.User;
 
 import java.util.Optional;
 

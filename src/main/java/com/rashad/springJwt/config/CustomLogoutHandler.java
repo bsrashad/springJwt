@@ -1,12 +1,13 @@
-package com.helloIftekhar.springJwt.config;
+package com.rashad.springJwt.config;
 
-import com.helloIftekhar.springJwt.model.Token;
-import com.helloIftekhar.springJwt.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+
+import com.rashad.springJwt.model.Token;
+import com.rashad.springJwt.repository.TokenRepository;
 
 @Configuration
 public class CustomLogoutHandler implements LogoutHandler {

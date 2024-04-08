@@ -1,6 +1,8 @@
-package com.helloIftekhar.springJwt.service;
+package com.rashad.springJwt.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +14,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.helloIftekhar.springJwt.model.AuthenticationResponse;
-import com.helloIftekhar.springJwt.model.Token;
-import com.helloIftekhar.springJwt.model.User;
-import com.helloIftekhar.springJwt.repository.TokenRepository;
-import com.helloIftekhar.springJwt.repository.UserRepository;
+import com.rashad.springJwt.model.AuthenticationResponse;
+import com.rashad.springJwt.model.Token;
+import com.rashad.springJwt.model.User;
+import com.rashad.springJwt.repository.TokenRepository;
+import com.rashad.springJwt.repository.UserRepository;
 
 @Service
 public class AuthenticationService {
@@ -62,6 +64,8 @@ public class AuthenticationService {
 
 
         user.setRole(request.getRole());
+        user.setIsVerified(false);
+        user.setBusinessUnit(request.getBusinessUnit());
 
         user = repository.save(user);
 
@@ -89,7 +93,7 @@ public class AuthenticationService {
     // }
 
 
-    public AuthenticationResponse authenticate(User request) {
+    public ResponseEntity<Map<String, String>> authenticate(User request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -98,12 +102,20 @@ public class AuthenticationService {
         );
 
         User user = repository.findByUsername(request.getUsername()).orElseThrow();
+    if (!user.getIsVerified()) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email is not verified yet");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
         String jwt = jwtService.generateToken(user);
 
         revokeAllTokenByUser(user);
         saveUserToken(jwt, user);
+        Map<String, String> response = new HashMap<>();
+        response.put("jwt", jwt);
+        // response.put("message", "User login was successful");
 
-        return new AuthenticationResponse(jwt, "User login was successful");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
     private void revokeAllTokenByUser(User user) {

@@ -1,4 +1,4 @@
-package com.helloIftekhar.springJwt.service;
+package com.rashad.springJwt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;

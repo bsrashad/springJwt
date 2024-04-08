@@ -1,4 +1,4 @@
-package com.helloIftekhar.springJwt.model;
+package com.rashad.springJwt.model;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,10 +17,13 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "first_name")
+    @Column(name = "empid")
+    private Integer empid;
+
+    @Column(name = "firstname")
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "lastname")
     private String lastName;
 
     @Column(name = "username")
@@ -29,8 +32,14 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "businessunit")
+    private String businessunit;
+
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    @Column(name = "isverified")
+    private Boolean isverified;
 
 
     @OneToMany(mappedBy = "user")
@@ -62,6 +71,22 @@ public class User implements UserDetails {
 
     public String getUsername() {
         return username;
+    }
+
+    public Boolean getIsVerified() {
+        return isverified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isverified = isVerified;
+    }
+
+    public String getBusinessUnit() {
+        return businessunit;
+    }
+
+    public void setBusinessUnit(String businessUnit) {
+        this.businessunit = businessUnit;
     }
 
     @Override

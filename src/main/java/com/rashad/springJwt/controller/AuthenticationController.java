@@ -1,12 +1,15 @@
-package com.helloIftekhar.springJwt.controller;
+package com.rashad.springJwt.controller;
 
-import com.helloIftekhar.springJwt.model.AuthenticationResponse;
-import com.helloIftekhar.springJwt.model.User;
-import com.helloIftekhar.springJwt.service.AuthenticationService;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.rashad.springJwt.model.AuthenticationResponse;
+import com.rashad.springJwt.model.User;
+import com.rashad.springJwt.service.AuthenticationService;
 
 @RestController
 public class AuthenticationController {
@@ -26,9 +29,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
+    public ResponseEntity<Map<String, String>> login(
             @RequestBody User request
     ) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        return authService.authenticate(request);
     }
 }
